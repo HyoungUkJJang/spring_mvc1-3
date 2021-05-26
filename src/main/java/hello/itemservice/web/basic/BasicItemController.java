@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -57,11 +58,28 @@ public class BasicItemController {
      * @param item
      * @return
      */
+//    @PostMapping("/add")
+//        public String save(Item item) {
+//            itemRepository.save(item);
+//           // return "basic/item"; 새로고침하면 문제됨
+//            return "redirect:/basic/items/"+item.getId();
+//        }
+
+    /**
+     * 저장되었다는 문구를 요청하는 리다이렉션 어트리뷰트 사용법
+     * @param item
+     * @return
+     */
     @PostMapping("/add")
-        public String save(Item item) {
-            itemRepository.save(item);
-            return "basic/item";
-        }
+    public String save(Item item, RedirectAttributes redirectAttributes) {
+        Item saveItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", saveItem.getId());
+        redirectAttributes.addAttribute("status", true);
+
+        //return "redirect:/basic/items/"+item.getId();
+        return "redirect:/basic/items/{itemId}"; // 나머지는 쿼리파라미터 형식으로 들어간다
+    }
+
 
     @GetMapping("/{itemId}/edit")
     public String editForm(@PathVariable Long itemId, Model model) {
